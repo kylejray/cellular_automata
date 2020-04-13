@@ -1,15 +1,16 @@
 import random
 from matplotlib import pyplot as plt
 
+
 def in_binary(rule_number):
     '''
-    Returns an 8 bit binary string representation of an integer. 
-    
+    Returns an 8 bit binary string representation of an integer.
+
     Parameters
     ----------
     rule_number: int
         The number to be converted
-        
+
     Returns
     -------
     out: string
@@ -23,7 +24,6 @@ def in_binary(rule_number):
     return in_binary
 
 
-
 def random_state(length, alphabet_size):
     '''
     Parameters
@@ -32,13 +32,14 @@ def random_state(length, alphabet_size):
         how many cells you want in your state
     alphabet_size: int
         how mant options for each cell
-        
+
     Returns
     -------
     state: list
     a random list of <length> integers between 0 and <alphabet_size>-1
     '''
-    return [random.randint(0,alphabet_size-1) for _ in range(length)]
+    return [random.randint(0, alphabet_size-1) for _ in range(length)]
+
 
 def next_state(current_state, lookup_table):
     '''
@@ -47,7 +48,8 @@ def next_state(current_state, lookup_table):
     current_state: list
         configuration to be iterated
     lookup_table: dict
-        allows the function to look up what sylbols are associated with different neighborhoods
+        allows the function to look up what symbols are
+        associated with different neighborhoods
     Returns
     -------
     new_state: list
@@ -56,47 +58,56 @@ def next_state(current_state, lookup_table):
     length = len(current_state)
     new_state = []
     for i in range(len(current_state)):
-    #sweeps through the state, using lookup_table to build the next state based on the ith, (i-1)th, and (i+1)th cells
-        neighborhood = (current_state[(i-1)], current_state[i], current_state[(i+1)%length])
+        # sweeps through the state, using lookup_table to build the next state
+        # based on the ith, (i-1)th, and (i+1)th cells
+        neighborhood = (current_state[(i-1)],
+                        current_state[i], current_state[(i+1) % length])
         new_state.append(int(lookup_table[neighborhood]))
     return(new_state)
 
 
-    def in_ternary(number):
+def in_ternary(number):
     '''
-    Returns an 8 bit binary string representation of an integer. 
-    
+    Returns an 8 bit binary string representation of an integer.
+
     Parameters
     ----------
     number: positive int <= 19682
         The number (positive integer) to be converted
-        
+
     Returns
     -------
     out: list
-        ternary represenation of a number with inverted order (smallest digits first)
+        ternary represenation of a number,
+        inverted order (smallest powers first)
     '''
 
-    assert number >= 0 and number <= 19682, ' only converts positive integers in [0,19682], inclusive'
-    out=[]
+    assert number >= 0 and number <= 19682,\
+        ' only converts positive integers in [0,19682], inclusive'
+    out = []
 
     for j in range(9):
-        i=8-j
-        if (number - 2*3**i) >= 0 :
+        i = 8-j
+        if (number - 2*3**i) >= 0:
             out.append(2)
             number = number - 2*3**i
         elif (number - 3**i) >= 0:
             out.append(1)
             number = number - 3**i
-        elif (number- 3**i < 0):
+        elif (number - 3**i < 0):
             out.append(0)
     return(out[::-1])
 
-default_neighborhoods = [(0,0,0), (0,0,1), (0,1,0), (0,1,1), (1,0,0), (1,0,1), (1,1,0), (1,1,1)]
+
+default_neighborhoods = [
+    (0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1),
+    (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
+    ]
+
 
 class CA_map:
 
-    def __init__(self, neighborhoods= default_neighborhoods, alphabet_size = 2):
+    def __init__(self, neighborhoods=default_neighborhoods, alphabet_size=2):
         '''
         Parameters
         ----------
@@ -111,16 +122,18 @@ class CA_map:
         alphabet_size: list
             see above
         rule_number: string(binary) or list(ternary)
-            a function that takes a rule number to a binary(ternary) representation
+            a function that takes a rule number
+            to a binary(ternary) representation
         '''
         self.neighborhoods = neighborhoods
         self.alphabet_size = alphabet_size
-        assert alphabet_size == 2 or alphabet_size ==3, 'binary and ternary only'
+        assert alphabet_size == 2 or alphabet_size == 3, \
+            'binary and ternary only'
         if alphabet_size == 2:
             self.rule_number = in_binary
         if alphabet_size == 3:
             self.rule_number = in_ternary
-            
+
     def lookup_table(self, N):
         '''
         Parameters
@@ -130,7 +143,8 @@ class CA_map:
         Returns
         ---------
         lookup_table : dict
-            a dictionary that uses the rule number to generate dynamics for each neighborhood
+            a dictionary that uses the rule number to generate
+            dynamics for each neighborhood
         '''
         string = self.rule_number(N)
         assert len(string) <= len(self.neighborhoods), 'rule number too large'
@@ -144,8 +158,9 @@ def next_state_ternary(current_state, lookup_table):
     current_state: list
         configuration to be iterated
     lookup_table: dict
-        allows the function to look up what sylbols are associated with different neighborhoods
-    
+        allows the function to look up what symbols
+        are associated with different neighborhoods
+
     Returns
     -------
     new_state: list
@@ -154,12 +169,14 @@ def next_state_ternary(current_state, lookup_table):
 
     length = len(current_state)
     new_state = []
-    
-    #sweeps through the state, using lookup_table to build the next state based on the ith and (i-1)th cells
+
+    # sweeps through the state, using lookup_table to build the next state
+    #  based on the ith and (i-1)th cells
     for i in range(len(current_state)):
         neighborhood = (current_state[(i-1)], current_state[i])
         new_state.append(int(lookup_table[neighborhood]))
     return(new_state)
+
 
 def simulate_lattice(length, time, CA_map, rule):
     '''
@@ -177,21 +194,22 @@ def simulate_lattice(length, time, CA_map, rule):
     ------
     shows a picture, returns nothing
     '''
-    lookup_table = CA_map.lookup_table(rule) 
-    field=[]
+    lookup_table = CA_map.lookup_table(rule)
+    field = []
     current_state = random_state(length, CA_map.alphabet_size)
     field.append(current_state)
-    # For each time step, we generate a new state using next_state, then append it to the field and set it to our current state
+    # For each time step, we generate a new state using next_state
+    # and append it to the field and set it to our current state
     for i in range(time):
-        # We have to check if we are doing the binary ot ternary case, because they look at different neighborhoods to iterate
+        # We have to check if we are doing the binary ot ternary case
+        # because they look at different neighborhoods to iterate
         if CA_map.alphabet_size == 3:
             current_state = next_state_ternary(current_state, lookup_table)
         if CA_map.alphabet_size == 2:
             current_state = next_state(current_state, lookup_table)
         field.append(current_state)
-        
-    #plot the field
-    plt.figure(figsize=(12,12))
+
+    # plot the field
+    plt.figure(figsize=(12, 12))
     plt.imshow(field, cmap=plt.cm.Greys, interpolation='nearest')
     plt.show()
-    
