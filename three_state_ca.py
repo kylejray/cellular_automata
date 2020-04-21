@@ -1,6 +1,26 @@
 import random
 from matplotlib import pyplot as plt
 
+'''
+Example of how to use this .py file
+after importing, you will have to instance a CA_map 
+
+1) make your neighborhoods, for example:
+nbh = [
+    (0, 0), (0, 1), (0, 2),
+    (1, 0), (1, 1), (1, 2),
+    (2, 0), (2, 1), (2, 2)
+    ]
+
+
+2) Instance the class:
+map=CA_map(nieghborhoods=nbh, alphabet_size=3)
+
+once this is done, you can run a lattice for whatever parameters you want:
+
+simulate_lattice(lattice length, time to run, map, rule #)
+'''
+
 
 def in_binary(rule_number):
     '''
