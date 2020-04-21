@@ -41,7 +41,7 @@ def random_state(length, alphabet_size):
     return [random.randint(0, alphabet_size-1) for _ in range(length)]
 
 
-def next_state(current_state, lookup_table):
+def next_state(state, lookup_table):
     '''
     Parameters
     ----------
@@ -55,15 +55,8 @@ def next_state(current_state, lookup_table):
     new_state: list
     a new configuaration based on the lookup table and neighborhood size
     '''
-    length = len(current_state)
-    new_state = []
-    for i in range(len(current_state)):
-        # sweeps through the state, using lookup_table to build the next state
-        # based on the ith, (i-1)th, and (i+1)th cells
-        neighborhood = (current_state[(i-1)],
-                        current_state[i], current_state[(i+1) % length])
-        new_state.append(int(lookup_table[neighborhood]))
-    return(new_state)
+    L = len(state)
+    return [int(lookup[(state[i-1], state[i], state[(i+1) % L])]) for i in range(L)]
 
 
 def in_ternary(number):
@@ -88,13 +81,13 @@ def in_ternary(number):
 
     for j in range(9):
         i = 8-j
-        if (number - 2*3**i) >= 0:
+        if (number % 2*3**i) < number:
             out.append(2)
-            number = number - 2*3**i
-        elif (number - 3**i) >= 0:
+            number = number % 2*3**i
+        elif (number % 3**i) < number:
             out.append(1)
-            number = number - 3**i
-        elif (number - 3**i < 0):
+            number = number % 3**i
+        elif (number % 3**i == number):
             out.append(0)
     return(out[::-1])
 
@@ -102,6 +95,12 @@ def in_ternary(number):
 default_neighborhoods = [
     (0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1),
     (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
+    ]
+
+ternary_neighborhoods = [
+    (0, 0), (0, 1), (0, 2),
+    (1, 0), (1, 1), (1, 2),
+    (2, 0), (2, 1), (2, 2)
     ]
 
 
@@ -168,14 +167,7 @@ def next_state_ternary(current_state, lookup_table):
     '''
 
     length = len(current_state)
-    new_state = []
-
-    # sweeps through the state, using lookup_table to build the next state
-    #  based on the ith and (i-1)th cells
-    for i in range(len(current_state)):
-        neighborhood = (current_state[(i-1)], current_state[i])
-        new_state.append(int(lookup_table[neighborhood]))
-    return(new_state)
+    return [int(lookup[(state[i-1], state[i])]) for i in range(L)]
 
 
 def simulate_lattice(length, time, CA_map, rule):
